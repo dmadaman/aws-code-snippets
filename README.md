@@ -6,7 +6,7 @@ This is a collection of code snippets that I've found useful while building appl
 
 ### Python
 * [Athena](Python/Athena.md)
-* [CodeBuild](Python/Codebuild.md)
+* [CodeBuild](Python/CodeBuild.md)
 * [DynamoDB](Python/DynamoDB.md)
 * [RDS](Python/RDS.md)
 * [S3](Python/S3.md)

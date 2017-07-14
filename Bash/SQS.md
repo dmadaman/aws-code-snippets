@@ -1,5 +1,6 @@
 Get all messages from an SQS queue (short polling):
-```
+
+```sh
 QUEUE=$SQS_QUEUE 			# Provided by CodeBuild environment
 URL=`aws sqs get-queue-url --queue-name=$QUEUE --output text`
 MSGFILE=/tmp/msgs-$$
@@ -29,9 +30,11 @@ function receive_msgs() {
 	done
 	rm -f $MSGFILE-$i.json # the last file will have 0 lines (no messages) so remove it
 }
-
-```Create a JSON to remove all received messages from the SQS queue:
 ```
+
+Create a JSON to remove all received messages from the SQS queue:
+
+```sh
 MSGFILE=/tmp/msgs-$$
 REMOVEFILE=/tmp/remove-msgs-$$
 
@@ -52,9 +55,11 @@ function create_msg_removal_json() {
 		fi
 	done
 }
-
-```Remove all received messages from the SQS queue:
 ```
+
+Remove all received messages from the SQS queue:
+
+```sh
 QUEUE=$SQS_QUEUE 			# Provided by CodeBuild environment
 URL=`aws sqs get-queue-url --queue-name=$QUEUE --output text`
 REMOVEFILE=/tmp/remove-msgs-$$
@@ -76,5 +81,4 @@ function remove_msgs() {
 		done
 	fi
 }
-
 ```
