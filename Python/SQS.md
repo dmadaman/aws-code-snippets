@@ -1,5 +1,6 @@
 Check to see if there are messages in an SQS queue, and do something if there are:
-```
+
+```python
 import boto3
 from botocore.exceptions import ClientError
 
@@ -21,5 +22,4 @@ try:
 			DoSomething();
 		else:
 			print("No messages in SQS queue; exiting...")
-
 ```

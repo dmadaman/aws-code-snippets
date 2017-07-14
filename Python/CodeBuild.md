@@ -1,5 +1,6 @@
 Start a CodeBuild job:
-```
+
+```python
 cb_client 	      = boto3.client('codebuild', region_name=REGION)
 REGION				    = os.environ['REGION_NAME']
 CODEBUILD_PROJECT	= os.environ['CODEBUILD_PROJECT_NAME']
@@ -15,5 +16,4 @@ def StartBuild():
 		print(" - ARN: {}".format(response['build']['arn']))
 		print(" - Start Time: {}".format(response['build']['startTime']))
 		print(" - Build Status {}".format(response['build']['buildStatus']))
-
 ```

@@ -1,5 +1,6 @@
 Upload a file to a directory on an RDS Oracle instance - useful for creating external tables:
-```
+
+```perl
 #!/usr/bin/perl 
 use DBI;
 use warnings;
@@ -80,5 +81,4 @@ die "Problem copying: $!\ " if $!;
 close INF || die "Can't close $fname: $!\n";
 $stmt = $conn->prepare ($sql_close);
 $stmt->execute() || die ( $DBI::errstr . "\n");
-
 ```

@@ -1,11 +1,13 @@
-Start and Stop RDS instances through Lambda/Python. &nbsp;Input is as follows:
-```
+Start and Stop RDS instances through Lambda/Python. Input is as follows:
+
+```json
 {
   "instances": ["instance-1", "instance-2"],
   "action": "stop"
 }
+```
 
-``````
+```python
 import boto3
 RDS = boto3.client('rds')
 def lambda_handler(event, context):
@@ -41,5 +43,4 @@ def lambda_handler(event, context):
             print("Exception: {0}".format(e))
     
     return "Completed!"
-
 ```

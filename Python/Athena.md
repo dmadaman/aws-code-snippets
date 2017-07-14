@@ -1,5 +1,6 @@
 Reload all partitions in a table:
-```
+
+```python
 import boto3
 import json
 import os
@@ -30,5 +31,4 @@ except ClientError as err:
 else: 
 	print("Query succeeded:")
 	print(json.dumps(response, indent=4))
-
 ```

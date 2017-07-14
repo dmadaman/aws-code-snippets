@@ -19,7 +19,7 @@ This is a collection of code snippets that I've found useful while building appl
 * [RDS](Perl/RDS.md)
 
 ### Hive and Athena
-* [Hive DDL](Hive\ and\ Athena/Hive\ DDL.md)
+* [Hive DDL](Hive/Hive.md)
 
 ### Quicksight
-* [Calculated Fields](Quicksight/Calculated\ Fields.md)
+* [Calculated Fields](Quicksight/CalculatedFields.md)

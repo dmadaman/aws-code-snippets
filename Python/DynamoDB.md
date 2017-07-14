@@ -1,5 +1,6 @@
 DynamoDB Setup/Headers
-```
+
+```python
 from __future__ import print_function # Python 2/3 compatibility
 import json
 import boto3
@@ -23,9 +24,11 @@ REGION		= os.environ['REGION_NAME']
 DDB_TABLE	= os.environ['DDB_TABLE_NAME']
 dynamodb	= boto3.resource('dynamodb', region_name=REGION)
 table 		= dynamodb.Table(DDB_TABLE)
-
-```Create an Item:
 ```
+
+Create an Item:
+
+```python
 def CreateItem():
 	try:
 		put_response = table.put_item(
@@ -39,9 +42,11 @@ def CreateItem():
 	else: 
 		print("PutItem succeeded:")
 		print(json.dumps(put_response, indent=4))
-
-```Try to get an item, create it if it doesn’t exist, but if it does, compare the data and take some action:
 ```
+
+Try to get an item, create it if it doesn’t exist, but if it does, compare the data and take some action:
+
+```python
 try:
   item = get_response['Item']
 except KeyError: # if get_response is empty, create an item in table
@@ -57,9 +62,11 @@ else:
 		StartBuild();
 	else:
 		print("The build last ran " + str(curr_time - get_response['Item']['lastbuild']) + " seconds ago; exiting...")
-
-```Update an item:
 ```
+
+Update an item:
+
+```python
 def UpdateItem():
 	try:
 		response = table.update_item(
@@ -78,5 +85,4 @@ def UpdateItem():
 	else:
 		print("UpdateItem succeeded:")
 		print(json.dumps(response, indent=4, cls=DecimalEncoder))
-
 ```
