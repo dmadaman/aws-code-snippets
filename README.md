@@ -1,6 +1,6 @@
 # AWS Code Snippets
 
-This is a collection of code snippets that I've found useful while building applications. It is organized by language, then by AWS service.
+This is a collection of code snippets that I've found useful while building applications in Amazon Web Services. It is organized by language.  Please submit pull requests with your code snippets if you'd like to share.
 
 ## Table of Contents
 
