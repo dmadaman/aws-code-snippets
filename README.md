@@ -23,3 +23,6 @@ This is a collection of code snippets that I've found useful while building appl
 
 ### Quicksight
 * [Calculated Fields](Quicksight/CalculatedFields.md)
+
+### IAM Policies
+* [S3](IAM/S3.md)
