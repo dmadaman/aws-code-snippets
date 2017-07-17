@@ -1,7 +1,7 @@
 DDL for Apache Extended Log Format:
 
 ```sql
-CREATE EXTERNAL TABLE IF NOT EXISTS quicksightlab01 (
+CREATE EXTERNAL TABLE IF NOT EXISTS mytable (
   `epochtime` bigint,
   `time-taken` int,
   `c-ip` string,
@@ -24,7 +24,7 @@ ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.RegexSerDe'
 WITH SERDEPROPERTIES (
   'serialization.format' = '1',
   'input.regex' = '([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ \"]*|\".*\") ([^ ]*) ([^ \"]*|\".*\")'
-) LOCATION 's3://aws-lukey-data-source/quicksightlab01/'
+) LOCATION 's3://mybucket/path/'
 TBLPROPERTIES ('has_encrypted_data'='false');
 ```
 
@@ -48,3 +48,13 @@ Useful input regex to capture different text log file fields:
 -- Capture a double-quoted text field like "field":
 ([^ \"]*|\".*\")
 ```
+
+Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License").
+
+You may not use this file except in compliance with the License.
+
+A copy of the License is located at
+
+<http://aws.amazon.com/apache2.0/>
