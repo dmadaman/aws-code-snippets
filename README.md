@@ -13,6 +13,7 @@ This is a collection of code snippets that I've found useful while building appl
 * [SQS](Python/SQS.md)
 
 ### Bash
+* [EC2](Bash/EC2.md)
 * [SQS](Bash/SQS.md)
 
 ### Perl
