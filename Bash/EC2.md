@@ -117,11 +117,11 @@ cleanup_snapshots() {
                     until delete_snap; do
                         # Retry the deletion 5 times before failing
                         if (( cnt == 5 )); then
-                            echo "Max retry reached"
+                            printf "%s\n" "Max retry reached"
                             break
                         fi
                         # Backup in case we hit the CLI thresholds
-                        echo "CLI Threshold Hit, Retrying..."
+                        printf "%s\n" "CLI Threshold Hit, Retrying..."
                         sleep 5
                         ((cnt++))
                     done
@@ -177,25 +177,25 @@ spacer() {
 }
 
 _get-ids-help-func(){
-    echo "This script requires the following variables:"
+    printf "%s\n" "This script requires the following variables:"
     spacer
-    echo "REQUIRED | -v | tag-value     | Value of the tag you want to query against"
-    echo "REQUIRED | -k | tag-key       | Key of the tag you want to query against"
+    printf "%s\n" "REQUIRED | -v | tag-value     | Value of the tag you want to query against"
+    printf "%s\n" "REQUIRED | -k | tag-key       | Key of the tag you want to query against"
     spacer
-    echo "OPTIONAL | -r | region        | AWS region to query against"
-    echo "OPTIONAL | -o | output        | yml|yaml|bash|shell"
-    echo "OPTIONAL | -a | ansible hosts | yml|yaml|bash|shell"
+    printf "%s\n" "OPTIONAL | -r | region        | AWS region to query against"
+    printf "%s\n" "OPTIONAL | -o | output        | yml|yaml|bash|shell"
+    printf "%s\n" "OPTIONAL | -a | ansible hosts | yml|yaml|bash|shell"
     spacer
-    echo "Output Options:"
-    echo "  Default     | Line separated list of instance ID's"
-    echo "  Yaml        |  - instanceid"
-    echo "  Bash/Shell  |  instanceid instanceid instanceid" 
+    printf "%s\n" "Output Options:"
+    printf "%s\n" "  Default     | Line separated list of instance ID's"
+    printf "%s\n" "  Yaml        |  - instanceid"
+    printf "%s\n" "  Bash/Shell  |  instanceid instanceid instanceid" 
     spacer
-    echo "Example Usage:"
-    echo "  $0 -r us-west-2 -k envtype -v stg-db"
-    echo "  $0 -v stg-db"
+    printf "%s\n" "Example Usage:"
+    printf "%s\n" "  $0 -r us-west-2 -k envtype -v stg-db"
+    printf "%s\n" "  $0 -v stg-db"
     spacer
-    echo "Exiting..."
+    printf "%s\n" "Exiting..."
 }
 _get-ids-global-vars() {
     region=""
@@ -229,11 +229,11 @@ _get-ids-check-vars() {
 }
 _get-ids-format() {
     if [[ $output =~ txt ]]; then
-        echo "$instances"
+        printf "%s\n" "$instances"
     elif [[ $output =~ yml|yaml ]]; then
-        echo "$instances"|sed 's/^/- /g'
+        printf "%s\n" "$instances"|sed 's/^/- /g'
     elif [[ $output =~ shell|bash ]]; then
-        echo "$instances" | paste -sd" "
+        printf "%s\n" "$instances" | paste -sd" "
     fi
 }
 _get-ids-main() {
