@@ -139,3 +139,113 @@ main() {
 
 main "$@"
 ```
+
+
+### Get Instance ID's 
+This script will get instance ID's by key/value pair
+
+This script requires the following variables:
+---------------------------------------------------------------------------------
+REQUIRED | -v | tag-value     | Value of the tag you want to query against
+REQUIRED | -k | tag-key       | Key of the tag you want to query against
+---------------------------------------------------------------------------------
+OPTIONAL | -r | region        | AWS region to query against
+OPTIONAL | -o | output        | yml|yaml|bash|shell
+OPTIONAL | -a | ansible hosts | yml|yaml|bash|shell
+---------------------------------------------------------------------------------
+Output Options:
+  Default     | Line separated list of instance ID's
+  Yaml        |  - instanceid
+  Bash/Shell  |  instanceid instanceid instanceid
+---------------------------------------------------------------------------------
+Example Usage:
+  ./get-instance-ids -r us-west-2 -k envtype -v stg-db
+  ./get-instance-ids -v stg-db
+---------------------------------------------------------------------------------
+
+
+
+```sh
+#!/bin/bash
+#---------------------------------------------------------------------------#
+# Author: Christopher Stobie                                                #
+# Contact: cjstobie@amazon.com                                              #
+#---------------------------------------------------------------------------#
+
+spacer() {
+    printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+}
+
+_get-ids-help-func(){
+    echo "This script requires the following variables:"
+    spacer
+    echo "REQUIRED | -v | tag-value     | Value of the tag you want to query against"
+    echo "REQUIRED | -k | tag-key       | Key of the tag you want to query against"
+    spacer
+    echo "OPTIONAL | -r | region        | AWS region to query against"
+    echo "OPTIONAL | -o | output        | yml|yaml|bash|shell"
+    echo "OPTIONAL | -a | ansible hosts | yml|yaml|bash|shell"
+    spacer
+    echo "Output Options:"
+    echo "  Default     | Line separated list of instance ID's"
+    echo "  Yaml        |  - instanceid"
+    echo "  Bash/Shell  |  instanceid instanceid instanceid" 
+    spacer
+    echo "Example Usage:"
+    echo "  $0 -r us-west-2 -k envtype -v stg-db"
+    echo "  $0 -v stg-db"
+    spacer
+    echo "Exiting..."
+}
+_get-ids-global-vars() {
+    region=""
+    key=""
+    value=""
+    output=""
+}
+_get-ids-opt-func() {
+    local OPTIND
+    while getopts "r:k:v:o:ah" opt; do
+        case $opt in
+            r) region=$OPTARG ;;
+            k) key=$OPTARG ;;
+            v) value=$OPTARG ;;
+            o) output=$OPTARG ;;
+            h) _get-ids-help-func; exit 0;;
+        esac
+    done
+}
+_get-ids-check-vars() {
+    if [[ -z $region ]]; then
+        region="us-west-2"
+    fi
+    if [[ -z $output  ]]; then
+        output="txt"
+    fi
+    if [[ -z $value || -z $key ]]; then
+        _get-ids-help-func
+        exit 1
+    fi
+}
+_get-ids-format() {
+    if [[ $output =~ txt ]]; then
+        echo "$instances"
+    elif [[ $output =~ yml|yaml ]]; then
+        echo "$instances"|sed 's/^/- /g'
+    elif [[ $output =~ shell|bash ]]; then
+        echo "$instances" | paste -sd" "
+    fi
+}
+_get-ids-main() {
+    instances=$(aws ec2 describe-instances --region $region --filters "Name=tag:$key,Values=$value" --query "Reservations[*].Instances[*].InstanceId" --output text)
+    _get-ids-format
+}
+get-ids() {
+    _get-ids-global-vars
+    _get-ids-opt-func "$@"
+    _get-ids-check-vars
+    _get-ids-main
+}
+
+get-ids "$@"
+```

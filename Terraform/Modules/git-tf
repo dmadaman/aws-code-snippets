@@ -1,0 +1,201 @@
+#!/bin/bash
+#---------------------------------------------------------------------------#
+#               Chris Stobie <cjstobie@gmail.com>                           #
+#---------------------------------------------------------------------------#
+
+spacer() {
+    printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+}
+show_help() {
+    spacer
+    echo "$0 Usage:"
+    spacer
+    echo "Optional Arguments"
+    echo "  -c                              Commit message ( defaults to $(date) )"
+    echo "  -s                              If you are updating git-tf use this flag"
+    spacer
+    echo "Required Variables:"
+    spacer
+    echo "  -t [major|minor|hotfix]         Version Increment Type 0.0.0 format"
+    spacer
+}
+get_opts() {
+    while getopts 'sc:t:hb' opt; do
+        case $opt in
+            t) increment_type=$OPTARG ;;
+            c) commit_message=$OPTARG ;;
+            s) script=true ;;
+
+            h) show_help; exit 0 ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+    args=$@
+
+    if [[ $script == true ]]; then
+        if [[ -n $increment_type ]]; then
+            echo "Arguments -s and -t must be run independently"
+            exit 1
+        fi
+    fi
+}
+check_path() {
+    pwd|rev|cut -d/ -f1|rev|grep 'modules' &>/dev/null
+}
+validate_input() {
+    if [[ -n $increment_type ]]; then
+        if ! [[ $increment_type =~ major|minor|hotfix ]]; then
+            spacer
+            echo "Increment type arg not supported"
+            show_help
+            exit 1
+        fi
+    fi
+    if [[ -z $increment_type ]]; then
+        show_help
+        exit 1
+    fi
+}
+check_if_git() {
+    if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null; then
+        return 0
+    fi
+    return 1
+}
+get_version() {
+    module=$(git status -s|awk '{print $2}'|cut -d/ -f1|sort|uniq)
+    if [[ -z $module ]]; then
+        echo "Missing Module"
+        echo "Exiting..."
+        exit 1
+    fi
+    currentVer=$(git tag -l ${module}-*|tail -n1) 
+    if [[ -z $currentVer ]]; then
+        currentVer="0.0.0"
+    else
+        currentVer=$(git tag -l ${module}-*|tail -n1|rev|cut -d- -f1|rev) 
+    fi
+}
+show_version() {
+    set_module
+    choose_module
+    currentVer=$(git tag -l ${module}-*|tail -n1)
+    if [[ -z $currentVer ]]; then
+        echo "No version for this module is available"
+        exit 1
+    else
+        spacer
+        echo "$module Current Version: $currentVer"
+        spacer
+    fi
+}
+increment_version() {
+    inc_type="${1:-hotfix}"
+    local major=0
+    local minor=0
+    local hotfix=0
+    
+    IFS='.' read -r major minor hotfix <<<"$currentVer"
+    
+    if [[ $inc_type == hotfix ]]; then
+        (( hotfix++ ))
+    elif [[ $inc_type == minor ]]; then
+        hotfix=0
+        (( minor++ ))
+    elif [[ $inc_type == major ]]; then
+        hotfix=0
+        minor=0
+        (( major++ ))
+    fi
+    
+    if [[ -z $module || -z $major || -z $minor || -z $hotfix ]]; then
+        echo "Versioning error"
+        echo "Check below for missing variables"
+        echo "Module: ${module}"
+        echo "Major: ${major}"
+        echo "Minor: ${minor}"
+        echo "HotFix: ${hotfix}"
+        exit 1
+    fi
+    newVer="${module}-${major}.${minor}.${hotfix}"
+    spacer
+    echo "Incrementing: [${module}-$currentVer] to [$newVer]"
+    spacer
+    read -n 1 -s -p "Press any key to continue "; echo
+    spacer
+}
+git_tag() {
+    git tag -a ${newVer} -m "Tagged $module with version $newVer"
+    spacer
+    echo "Latest Version of $module: $newVer"
+    spacer
+}
+git_add() {
+    git add -A
+    modules_changed_count=$(git status -s|awk '{print $2}'|grep -v 'git-tf'|sort|cut -d/ -f1|uniq|wc -l)
+}
+git_commit() {
+    if [[ -z $commit_message ]]; then
+        commit_message=$(date)
+    fi
+    git commit -m "$commit_message" >/dev/null 2>&1
+}
+git_push(){ 
+    git push -u origin master
+    git push --tags
+}
+validate_git() {
+    if ! check_if_git; then
+        echo "We are not in an active git directory"
+        echo "Exiting..."
+        exit 1
+    fi
+    if [[ -z $(git status -s) ]]; then
+        echo "No changes staged locally"
+        exit 1
+    fi
+    if (( $modules_changed_count != 1 )); then
+        echo "Please only update a single module at a time"
+        exit 1
+    fi
+}
+update_script() {
+    if git status -s|grep git-tf &>/dev/null; then
+        spacer
+        echo "Updating git-tf wrapper script"
+        spacer
+        git add git-tf
+        git_commit
+        git push -u origin master
+    else
+        echo "We are not tracking any changes for git-tf"
+        exit 1
+    fi
+}
+main() {
+    if ! [[ $(pwd) =~ .*modules$ ]]; then
+        echo "This wrapper script must be run from the top level git directory"
+        exit 1
+    fi
+    get_opts "$@"
+    if [[ $script == true ]]; then
+        update_script
+        exit 0
+    fi
+    get_version
+    increment_version $increment_type
+    git_add
+    validate_git
+    git_commit
+    validate_input
+    git_tag
+    git_push
+}
+
+#---------------------------------------------------------------------------#
+# Global Variables                                                          #
+#---------------------------------------------------------------------------#
+script=false
+
+main "$@"
