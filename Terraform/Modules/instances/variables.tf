@@ -1,0 +1,10 @@
+variable "env" {}
+variable "ami_id" {}
+variable "instance_type" {}
+variable "subnets" {}
+variable "azs_short" {}
+variable "sgs" {}
+variable "region" {}
+variable "key_name" {}
+variable "count" {}
+variable "tag_name" {}
